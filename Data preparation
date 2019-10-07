@@ -1,0 +1,46 @@
+import pandas as pd
+import os
+Folder_Path = r'D:\work\POTOO'          #要拼接的文件夹及其完整路径，注意不要包含中文
+SaveFile_Path =  r'D:\work\POTOO'       #拼接后要保存的文件路径
+SaveFile_Name = r'all.csv'              #合并后要保存的文件名
+ 
+#修改当前工作目录
+os.chdir(Folder_Path)
+#将该文件夹下的所有文件名存入一个列表
+file_list = os.listdir()
+ 
+#读取第一个CSV文件并包含表头
+df = pd.read_csv(Folder_Path +'\\'+ file_list[0],sep=None)   #编码默认UTF-8，若乱码自行更改
+ 
+#将读取的第一个CSV文件写入合并后的文件保存
+df.to_csv(SaveFile_Path+'\\'+ SaveFile_Name,encoding="utf_8_sig",index=False)
+ 
+#循环遍历列表中各个CSV文件名，并追加到合并后的文件
+for i in range(1,len(file_list)):
+    df = pd.read_csv(Folder_Path + '\\'+ file_list[i],sep=None)
+    df.to_csv(SaveFile_Path+'\\'+ SaveFile_Name,encoding="utf_8_sig",index=False, header=False, mode='a+')
+
+import pandas as pd
+import csv
+
+#打开excel文件
+data1 = pd.read_csv('D:/work/POTOO/potoo.csv')
+data1.Date= pd.to_datetime(data1.Date, format="%m/%d/%Y", errors='ignore')
+data2 = pd.read_csv('D:/work/POTOO/all.csv')
+data2.Date= pd.to_datetime(data2.Date, format="%m/%d/%Y", errors='ignore')
+result = pd.merge(data1, data2, on=["Date","Ticker"],how='outer')
+result = result.to_csv('D:/work/POTOO/finaldata.csv') 
+
+# solution 2
+import pandas as pd
+import csv
+
+#打开excel文件
+data1 = pd.read_csv('D:/work/POTOO/potoo.csv')
+data3 = data1.set_index(["Ticker","Date"])
+data2 = pd.read_csv('D:/work/POTOO/all.csv')
+data4 = data2.set_index(["Ticker","Date"])
+result = pd.merge(data3, data4, on=["Ticker","Date"],sort= False, copy=True,how='outer')
+result = result.to_csv('D:/work/POTOO/finaldata.csv') 
+
+data1.head()
